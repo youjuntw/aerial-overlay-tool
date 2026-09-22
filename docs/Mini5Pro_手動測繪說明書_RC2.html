@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>Mini 5 Pro 手動測繪說明書(RC2)</title>
+<style>
+  :root{--ink:#1a1a1a;--mut:#555;--line:#ccc;--accent:#0b6b57;--accent2:#b3261e;--boxbg:#f2f7f5;--warnbg:#fff4f2;--stepbg:#eef4f2;}
+  *{box-sizing:border-box}
+  body{font-family:"Microsoft JhengHei","Noto Sans TC",system-ui,sans-serif;color:var(--ink);margin:0;background:#eee;line-height:1.55;}
+  .page{background:#fff;max-width:840px;margin:16px auto;padding:26px 34px;box-shadow:0 1px 6px rgba(0,0,0,.15);}
+  h1{font-size:22px;margin:0 0 2px;}
+  .sub{color:var(--mut);font-size:12.5px;margin:0 0 14px;border-bottom:2px solid var(--accent);padding-bottom:8px;}
+  h2{font-size:16px;margin:18px 0 6px;color:#fff;background:var(--accent);padding:5px 10px;border-radius:5px;}
+  h3{font-size:14px;margin:10px 0 4px;color:var(--accent);}
+  ol,ul{margin:4px 0 6px;padding-left:22px;}
+  li{margin:3px 0;font-size:13.5px;}
+  .box{background:var(--boxbg);border:1px solid #bcd;border-radius:6px;padding:10px 14px;margin:8px 0;}
+  .warn{background:var(--warnbg);border:1px solid #e6b0a8;border-radius:6px;padding:10px 14px;margin:8px 0;}
+  table{border-collapse:collapse;width:100%;font-size:13px;margin:6px 0;}
+  th,td{border:1px solid var(--line);padding:5px 9px;text-align:left;vertical-align:top;}
+  th{background:var(--boxbg);}
+  .k{color:var(--accent2);font-weight:bold;}
+  .muted{color:var(--mut);font-size:12px;}
+  code{background:#eef;padding:1px 5px;border-radius:3px;font-size:12.5px;}
+  .lead{font-size:13.5px;background:var(--stepbg);border-left:4px solid var(--accent);padding:8px 12px;border-radius:4px;margin:8px 0;}
+  @media print{body{background:#fff;}.page{box-shadow:none;margin:0;max-width:none;padding:12mm 14mm;}h2{break-after:avoid;}li,tr{break-inside:avoid;}@page{size:A4;margin:10mm;}}
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>DJI Mini 5 Pro 手動測繪說明書</h1>
+  <p class="sub">你的裝備:Mini 5 Pro + <b>DJI RC 2(自帶螢幕)</b>,無另接手機　·　目標:拍出可套施工圖的進度底圖　·　程度:第一次做測繪</p>
+
+  <div class="lead">
+    <b>先講最重要的一件事:你不用下載任何 App。</b><br>
+    DJI RC 2 被 DJI 鎖住、<b>裝不了第三方測繪 App</b>(WaypointMap 那類都不行)。所以我們**用 DJI Fly 內建的「定時拍照」+ 手動來回飛**,一樣拍得出可拼接的照片。(想要「自動網格航線」才需要另買 RC-N3 接手機裝 App —— 本說明書不走這條。)
+  </div>
+
+  <h2>步驟 1　飛行前:相機與拍照設定(在 DJI Fly 裡)</h2>
+  <ol>
+    <li>開 DJI Fly,連上 Mini 5 Pro。</li>
+    <li>把<b>相機鏡頭轉成垂直向下</b>:在畫面右側雲台俯仰,拉到 <span class="k">−90°(正下方)</span>。這是測繪的鐵則,斜的不能用。</li>
+    <li>切到<b>拍照模式</b> → 選 <span class="k">定時拍照 / 間隔拍攝</span>(Timed Shot)→ 間隔設 <span class="k">2 秒</span>。<span class="muted">(Mini 5 Pro 支援邊飛邊每 2 秒自動拍一張。)</span></li>
+    <li>照片格式:<b>JPEG</b> 即可(要更好可 JPEG+RAW,但檔案大、非必要)。</li>
+    <li>確認記憶卡空間夠(一趟可能上百張)。</li>
+  </ol>
+
+  <h2>步驟 2　飛「來回掃描」網格(手動,像割草機)</h2>
+  <div class="box">
+    <b>核心觀念:</b>固定高度、鏡頭朝下、<b>一條一條平行線來回飛</b>,靠「飛得慢 + 每2秒拍 + 航線靠近」製造大量重疊。<span class="k">重疊寧可多、不要少。</span>
+  </div>
+  <table>
+    <tr><th>項目</th><th>建議設定</th><th>說明</th></tr>
+    <tr><td>高度</td><td class="k">固定 80–100 m(全程不變)</td><td>混高度會破圖。須符合法規(台灣一般 ≤120 m/400 ft;禁航/限高區先確認)。</td></tr>
+    <tr><td>相機</td><td class="k">−90° 垂直向下</td><td>全程保持</td></tr>
+    <tr><td>飛行速度</td><td class="k">慢速(約 3–4 m/s)</td><td>Mini 是滾動快門,快會糊;慢飛+2秒拍→航向重疊足夠</td></tr>
+    <tr><td>航線間距</td><td class="k">相鄰兩條線「畫面重疊約一半」</td><td>目視:下一條線要看得到上一條拍到的地面(旁向重疊 ≥60%)</td></tr>
+    <tr><td>範圍</td><td>蓋滿基地 + 邊界外擴一點</td><td>邊緣才不會缺</td></tr>
+  </table>
+  <h3>實際飛法</h3>
+  <ol>
+    <li>飛到基地一角、升到設定高度、相機朝下、開始<b>定時拍照</b>。</li>
+    <li>沿一條直線慢速飛到對邊 → 橫移一小段(約畫面寬的一半)→ <b>反方向</b>飛回來 → 再橫移 → 如此來回,直到掃完整塊地。</li>
+    <li>全程<b>高度不變、相機不動</b>。飛完再關掉定時拍照、降落。</li>
+    <li>需要補拍 → <b>用同一高度</b>補;<b>相鄰地塊分開飛、分開處理</b>(不要混在同一批)。</li>
+  </ol>
+  <div class="warn">
+    <b>安全與法規(飛之前):</b>確認現場非禁航區、無超高限制、天氣穩(風小)、電量足(分多顆電池、每顆留返航餘量)。市區近道路/建物請依當地無人機規定,必要時申請。
+  </div>
+
+  <h2>步驟 3　把照片拷到電腦</h2>
+  <ol>
+    <li>降落後,把記憶卡(或用傳輸線接飛機)插到電腦,複製當天所有照片。</li>
+    <li>在你自己的<b>空拍照工作資料夾</b>下,<b>用當期日期建一個子資料夾</b>(例:<code>1150920</code>),照片全放進去。</li>
+    <li>一個資料夾只放<b>同一塊地、同一趟、同高度</b>的照片。</li>
+  </ol>
+
+  <h2>步驟 4　出底圖 —— 先用你現有的「空拍套疊工具」(建議)</h2>
+  <div class="box">你已經有這支工具,<b>免安裝、免付費</b>,就能拼底圖並套施工圖。第一次做測繪,先用它就好。</div>
+  <ol>
+    <li>雙擊 <code>空拍套疊工具\雙擊執行.bat</code>。</li>
+    <li>選 <b>[1] 只合成</b> → 選你剛建的日期資料夾 → 幾十秒出 <code>mosaic.png</code>(在 <code>空拍套疊工具\輸出\日期\</code>)。先看拼得好不好。</li>
+    <li>要套施工圖 → 選 <b>[2]</b> 產生對位工具 → 拖 4 個基地角、下載 points.txt → 再選 <b>[3]</b> 出套疊圖。</li>
+  </ol>
+  <p class="muted">拍得越滿、重疊越多、同一高度,拼出來越乾淨。這是<b>視覺進度底圖</b>,不是量測級。</p>
+
+  <h3>(進階,之後有需要再做)要量測級 / 完全無縫 → WebODM</h3>
+  <ul>
+    <li>WebODM 是免費的正射建模軟體,需一台記憶體較大的電腦(建議 16GB 以上)安裝。</li>
+    <li>把同一批照片匯入 → 產出正射影像(Orthophoto)→ 再丟回套疊工具當底圖。</li>
+    <li>這步比較進階,等你熟了或有交付需求再弄,我可以另外給安裝步驟。</li>
+  </ul>
+
+  <div class="warn">
+    <b>三個最常見的失敗(先記住)</b>
+    <ul style="margin-bottom:0">
+      <li><b>照片太少 / 重疊不夠</b> → 拼不起來或破洞。慢飛、2秒拍、航線靠近,寧可多拍。</li>
+      <li><b>飛到一半改高度、或混到別塊地/補拍不同高度</b> → 破圖。全程同高度、一塊地一批。</li>
+      <li><b>相機沒轉到 −90°</b> → 斜的拼不出正射。起飛就先拉到正下方。</li>
+    </ul>
+  </div>
+
+  <p class="muted" style="margin-top:14px;border-top:1px solid var(--line);padding-top:8px">
+    資料來源(2026-09 查證):DJI RC 2 不支援第三方 App(DJI 官方限制);Mini 5 Pro DJI Fly 支援定時拍照與航點飛行。Mini 無 RTK,定位為公尺級,套圖以對齊看得見的地物為準,非量測/契約座標依據。
+  </p>
+</div>
+</body>
+</html>

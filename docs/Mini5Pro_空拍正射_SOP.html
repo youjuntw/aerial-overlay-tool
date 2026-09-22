@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>DJI Mini 5 Pro 空拍正射底圖 SOP</title>
+<style>
+  :root{--ink:#1a1a1a;--mut:#555;--line:#ccc;--accent:#b3261e;--boxbg:#f6f6f4;--warnbg:#fff4f2;}
+  *{box-sizing:border-box}
+  body{font-family:"Microsoft JhengHei","Noto Sans TC",system-ui,sans-serif;color:var(--ink);
+       margin:0;background:#eee;line-height:1.5;}
+  .page{background:#fff;max-width:820px;margin:16px auto;padding:26px 34px;box-shadow:0 1px 6px rgba(0,0,0,.15);}
+  h1{font-size:21px;margin:0 0 2px;}
+  .sub{color:var(--mut);font-size:12.5px;margin:0 0 14px;border-bottom:2px solid var(--accent);padding-bottom:8px;}
+  h2{font-size:15px;margin:16px 0 6px;color:var(--accent);border-left:4px solid var(--accent);padding-left:8px;}
+  ol,ul{margin:4px 0 4px 4px;padding-left:20px;}
+  li{margin:2px 0;font-size:13.5px;}
+  .box{background:var(--boxbg);border:1px solid var(--line);border-radius:6px;padding:10px 14px;margin:8px 0;}
+  .warn{background:var(--warnbg);border:1px solid #e6b0a8;border-radius:6px;padding:10px 14px;margin:8px 0;}
+  table{border-collapse:collapse;width:100%;font-size:13px;margin:4px 0;}
+  th,td{border:1px solid var(--line);padding:5px 8px;text-align:left;}
+  th{background:var(--boxbg);}
+  .k{color:var(--accent);font-weight:bold;}
+  .muted{color:var(--mut);font-size:12px;}
+  .cols{display:flex;gap:16px;flex-wrap:wrap;}
+  .cols>div{flex:1;min-width:240px;}
+  code{background:#f0f0ee;padding:1px 5px;border-radius:3px;font-size:12.5px;}
+  @media print{
+    body{background:#fff;} .page{box-shadow:none;margin:0;max-width:none;padding:12mm 14mm;}
+    h2{break-after:avoid;} li,tr{break-inside:avoid;}
+    @page{size:A4;margin:10mm;}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>DJI Mini 5 Pro 空拍正射底圖 SOP</h1>
+  <p class="sub">用途:拍出可做「正射鑲嵌」的空拍,供施工圖套疊與進度記錄　·　適用機:DJI Mini 5 Pro　·　給施工組</p>
+
+  <div class="box">
+    <b>一句話流程:</b> 用第三方 App 規劃<span class="k">自動網格航線</span> → 垂直向下、高重疊拍幾十~上百張 → 丟 WebODM 出<span class="k">正射底圖</span> → 交給「空拍套疊工具」套施工圖。
+  </div>
+
+  <h2>1. 規劃航線(關鍵:DJI Fly 沒有建圖功能)</h2>
+  <ul>
+    <li>DJI Fly 對 Mini 5 Pro <b>只有「航點飛行」</b>,不會自動算重疊;「建圖航線」是企業版 DJI Pilot 2 才有。</li>
+    <li>改用第三方任務規劃 App(畫範圍→自動排網格→用航點功能飛):
+      <b>WaypointMap</b>(明確支援 Mini 5 Pro,首選)或 <b>Map Pilot Pro</b>。</li>
+    <li>在 App 內畫多邊形<b>蓋滿整個基地並外擴約 10~20 m</b>。一次只飛<b>一塊地</b>。</li>
+  </ul>
+
+  <h2>2. 飛行參數(照抄)</h2>
+  <table>
+    <tr><th>項目</th><th>設定</th><th>原因</th></tr>
+    <tr><td>雲台俯角</td><td class="k">−90°(垂直向下)</td><td>正射必須;斜拍無法量測</td></tr>
+    <tr><td>航向重疊 (front)</td><td class="k">75–80%</td><td>不足會拼不起來/破洞</td></tr>
+    <tr><td>旁向重疊 (side)</td><td class="k">65–70%</td><td>同上</td></tr>
+    <tr><td>飛行高度</td><td class="k">固定不變</td><td>混高度會破圖;依基地大小取,並符合法規(台灣一般 ≤120 m/400 ft,禁航區/限高請先確認)</td></tr>
+    <tr><td>速度</td><td>慢速</td><td>Mini 是滾動快門,快會變形</td></tr>
+    <tr><td>張數</td><td class="k">數十~上百張</td><td>只有十幾張拼不出正射</td></tr>
+  </table>
+
+  <h2>3. 拍攝注意</h2>
+  <div class="cols">
+    <div><ul>
+      <li>光線平均:<b>陰天最佳</b>;避免正午強陰影、逆光。</li>
+      <li>同一批、<b>同一高度</b>一次飛完。</li>
+    </ul></div>
+    <div><ul>
+      <li>需要<b>補拍也用同一高度</b>,不要混不同航高。</li>
+      <li>相鄰地塊<b>分開飛、分開處理</b>。</li>
+    </ul></div>
+  </div>
+
+  <h2>4. 出正射底圖(擇一)</h2>
+  <table>
+    <tr><th>軟體</th><th>費用</th><th>說明</th></tr>
+    <tr><td><b>WebODM</b></td><td>免費/開源</td><td>本機跑,吃有 GPS 的 JPG,最推薦</td></tr>
+    <tr><td>Maps Made Easy / DroneDeploy</td><td>雲端訂閱</td><td>上傳照片自動出圖,最省事</td></tr>
+  </table>
+  <p class="muted">操作:新建專案 → 匯入整批照片 → 產出 Orthophoto(正射鑲嵌,通常是 GeoTIFF/PNG)。</p>
+
+  <h2>5. 接到「空拍套疊工具」</h2>
+  <ul>
+    <li><b>要精準套施工圖</b>:用步驟 4 的正射底圖 → 工具 <code>prep</code> → 拖 4 個基地角 → <code>overlay</code> 出套疊圖。</li>
+    <li><b>只是每期快速看進度</b>:同一高度、夠重疊的近正射照,直接用工具 <code>stitch</code> 拼即可(免出正射)。</li>
+  </ul>
+
+  <div class="warn">
+    <b>常見雷(先看這個)</b>
+    <ul style="margin-bottom:0">
+      <li><b>照片太少/重疊不足</b> → 拼不出正射或破洞。寧可多拍、多重疊。</li>
+      <li><b>混到不同高度的補拍或相鄰地塊</b> → 破圖(工具會自動剔除少數異常高度,但拍攝時就分開最保險)。</li>
+      <li><b>Mini 無 RTK</b> → 定位公尺級,非量測/契約座標依據;套圖以對齊看得見的地物為準。</li>
+    </ul>
+  </div>
+
+  <p class="muted" style="margin-top:14px;border-top:1px solid var(--line);padding-top:8px">
+    快速拼接底圖為<b>視覺用途</b>,非量測級正射。需要量測/交付,請走步驟 4 的正射流程。
+  </p>
+</div>
+</body>
+</html>

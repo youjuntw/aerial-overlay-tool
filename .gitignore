@@ -1,0 +1,36 @@
+# ---- 產出與工作檔(絕不上傳專案照片/成果圖)----
+輸出/
+output/
+*.png
+*.jpg
+*.JPG
+*.jpeg
+*.tif
+*.tiff
+mosaic.png
+套疊*.png
+圍籬編號對照圖.png
+picker.html
+points.txt
+
+# ---- 打包產物(內嵌本機路徑,不進版本庫)----
+*.exe
+build/
+dist/
+*.spec
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# ---- 內部交接筆記(含公司/廠商資訊,不公開)----
+HANDOFF.md
+
+# ---- OS / 編輯器 ----
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
