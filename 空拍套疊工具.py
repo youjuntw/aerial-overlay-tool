@@ -492,38 +492,96 @@ def _ask_path(prompt, kind):
     if kind=="file" and not os.path.isfile(s): print("  ⚠ 找不到檔案:",s); return None
     return s
 
+_PS_PICKER=r'''param([string]$Title="",[string]$Out="",[string]$Mode="dir",[string]$Filter="All files|*.*")
+Add-Type -AssemblyName System.Windows.Forms | Out-Null
+$owner=New-Object System.Windows.Forms.Form; $owner.TopMost=$true; $owner.ShowInTaskbar=$false
+function Save($p){ if($p){ [IO.File]::WriteAllText($Out,$p,[Text.Encoding]::UTF8) } }
+if($Mode -eq "file"){
+  $d=New-Object System.Windows.Forms.OpenFileDialog
+  if($Title){ $d.Title=$Title }
+  $d.Filter=$Filter; $d.CheckFileExists=$true
+  if($d.ShowDialog($owner) -eq [System.Windows.Forms.DialogResult]::OK){ Save $d.FileName }
+  exit 0
+}
+$code=@'
+using System;
+using System.Runtime.InteropServices;
+namespace NFP {
+  public static class Dlg {
+    public static string Show(string title){
+      IntPtr hwnd=GetActiveWindow();
+      IFileOpenDialog dlg=(IFileOpenDialog)new FileOpenDialogRCW();
+      uint o; dlg.GetOptions(out o);
+      dlg.SetOptions(o | 0x20 | 0x40);
+      if(!string.IsNullOrEmpty(title)) dlg.SetTitle(title);
+      int hr=dlg.Show(hwnd);
+      if(hr!=0) return null;
+      IShellItem item; dlg.GetResult(out item);
+      string path; item.GetDisplayName(0x80058000, out path);
+      return path;
+    }
+    [DllImport("user32.dll")] static extern IntPtr GetActiveWindow();
+    [ComImport, ClassInterface(ClassInterfaceType.None), Guid("DC1C5A9C-E88A-4ADE-A5A1-60F82A20AEF7")] class FileOpenDialogRCW {}
+    [ComImport, Guid("d57c7288-d4ad-4768-be02-9d969532d960"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    interface IFileOpenDialog {
+      [PreserveSig] int Show(IntPtr parent);
+      void SetFileTypes(); void SetFileTypeIndex(); void GetFileTypeIndex();
+      void Advise(); void Unadvise();
+      void SetOptions(uint fos); void GetOptions(out uint pfos);
+      void SetDefaultFolder(); void SetFolder(); void GetFolder(); void GetCurrentSelection();
+      void SetFileName(); void GetFileName();
+      void SetTitle([MarshalAs(UnmanagedType.LPWStr)] string t);
+      void SetOkButtonLabel(); void SetFileNameLabel();
+      void GetResult(out IShellItem ppsi);
+    }
+    [ComImport, Guid("43826d1e-e718-42ee-bc55-a1e261c37bfe"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    interface IShellItem {
+      void BindToHandler(); void GetParent();
+      void GetDisplayName(uint sigdn, [MarshalAs(UnmanagedType.LPWStr)] out string name);
+    }
+  }
+}
+'@
+try{
+  Add-Type -TypeDefinition $code -Language CSharp | Out-Null
+  Save ([NFP.Dlg]::Show($Title))
+}catch{
+  $b=New-Object System.Windows.Forms.FolderBrowserDialog
+  if($Title){ $b.Description=$Title }
+  $b.ShowNewFolderButton=$false
+  if($b.ShowDialog($owner) -eq [System.Windows.Forms.DialogResult]::OK){ Save $b.SelectedPath }
+}
+exit 0
+'''
+
 def _win_dialog(kind, title, filt=None):
-    """用 Windows 內建的原生對話框選『資料夾/檔案』——.py 與打包 exe 行為完全一致,
-    不依賴 tkinter(避免打包後對話框卡死)。透過內建 powershell 叫出 WinForms 對話框。
-    回傳 (狀態, 路徑):狀態為 'ok'(選了)/ 'cancel'(取消)/ 'unavailable'(叫不出視窗)。"""
+    """用 Windows『現代檔案總管樣式』對話框選資料夾/檔案:資料夾用 IFileOpenDialog
+    (FOS_PICKFOLDERS,有導覽窗格/位址列,非舊樹狀窗),檔案用 OpenFileDialog。
+    .py 與打包 exe 一致,不依賴 tkinter。透過內建 powershell 執行,標題以參數傳入
+    (走 Windows 寬字元,不受 .ps1 編碼影響)。
+    回傳 (狀態, 路徑):'ok' 選了 / 'cancel' 取消 / 'unavailable' 叫不出視窗。"""
     import subprocess, tempfile
-    fd,tmp=tempfile.mkstemp(suffix=".txt"); os.close(fd)
-    t=title.replace("'","''")
-    common=("Add-Type -AssemblyName System.Windows.Forms | Out-Null;"
-            "$o=New-Object System.Windows.Forms.Form;$o.TopMost=$true;$o.ShowInTaskbar=$false;")
-    if kind=="dir":
-        ps=common+("$g=New-Object System.Windows.Forms.FolderBrowserDialog;"
-                   "$g.Description='%s';$g.ShowNewFolderButton=$false;"
-                   "if($g.ShowDialog($o) -eq [System.Windows.Forms.DialogResult]::OK)"
-                   "{[IO.File]::WriteAllText('%s',$g.SelectedPath,[Text.Encoding]::UTF8)}"%(t,tmp))
-    else:
-        f=(filt or "所有檔案|*.*").replace("'","''")
-        ps=common+("$g=New-Object System.Windows.Forms.OpenFileDialog;"
-                   "$g.Title='%s';$g.Filter='%s';$g.CheckFileExists=$true;"
-                   "if($g.ShowDialog($o) -eq [System.Windows.Forms.DialogResult]::OK)"
-                   "{[IO.File]::WriteAllText('%s',$g.FileName,[Text.Encoding]::UTF8)}"%(t,f,tmp))
+    fdo,tmp=tempfile.mkstemp(suffix=".txt"); os.close(fdo)
+    fdp,ps1=tempfile.mkstemp(suffix=".ps1"); os.close(fdp)
+    def _clean():
+        for x in (tmp,ps1):
+            try: os.remove(x)
+            except Exception: pass
     try:
-        subprocess.run(["powershell","-NoProfile","-STA","-Command",ps],timeout=600)
+        with open(ps1,"w",encoding="utf-8") as fp: fp.write(_PS_PICKER)
     except Exception as e:
-        try: os.remove(tmp)
-        except Exception: pass
-        print("  (原生選擇視窗叫不出來:%s)"%e); return ("unavailable",None)
+        _clean(); print("  (選擇視窗建立失敗:%s)"%e); return ("unavailable",None)
+    args=["powershell","-NoProfile","-STA","-ExecutionPolicy","Bypass","-File",ps1,
+          "-Title",title,"-Out",tmp,"-Mode",kind,"-Filter",(filt or "所有檔案|*.*")]
+    try:
+        subprocess.run(args,timeout=600)
+    except Exception as e:
+        _clean(); print("  (原生選擇視窗叫不出來:%s)"%e); return ("unavailable",None)
     path=None
     try:
         with open(tmp,encoding="utf-8-sig") as fp: path=fp.read().strip() or None
     except Exception: path=None
-    try: os.remove(tmp)
-    except Exception: pass
+    _clean()
     return ("ok",path) if path else ("cancel",None)
 
 def wizard():
