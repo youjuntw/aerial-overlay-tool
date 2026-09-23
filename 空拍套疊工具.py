@@ -484,7 +484,7 @@ def ask_pdf_page():
     except Exception: return 3
 
 def _ask_path(prompt, kind):
-    """從主控台取得路徑:可把資料夾/檔案從檔案總管『拖進視窗』自動貼上。"""
+    """最後備援:主控台輸入路徑(可把資料夾/檔案從檔案總管拖進視窗貼上)。"""
     print(prompt)
     s=input("  → ").strip().strip('"').strip("'").strip()
     if not s: return None
@@ -492,37 +492,57 @@ def _ask_path(prompt, kind):
     if kind=="file" and not os.path.isfile(s): print("  ⚠ 找不到檔案:",s); return None
     return s
 
+def _win_dialog(kind, title, filt=None):
+    """用 Windows 內建的原生對話框選『資料夾/檔案』——.py 與打包 exe 行為完全一致,
+    不依賴 tkinter(避免打包後對話框卡死)。透過內建 powershell 叫出 WinForms 對話框。
+    回傳 (狀態, 路徑):狀態為 'ok'(選了)/ 'cancel'(取消)/ 'unavailable'(叫不出視窗)。"""
+    import subprocess, tempfile
+    fd,tmp=tempfile.mkstemp(suffix=".txt"); os.close(fd)
+    t=title.replace("'","''")
+    common=("Add-Type -AssemblyName System.Windows.Forms | Out-Null;"
+            "$o=New-Object System.Windows.Forms.Form;$o.TopMost=$true;$o.ShowInTaskbar=$false;")
+    if kind=="dir":
+        ps=common+("$g=New-Object System.Windows.Forms.FolderBrowserDialog;"
+                   "$g.Description='%s';$g.ShowNewFolderButton=$false;"
+                   "if($g.ShowDialog($o) -eq [System.Windows.Forms.DialogResult]::OK)"
+                   "{[IO.File]::WriteAllText('%s',$g.SelectedPath,[Text.Encoding]::UTF8)}"%(t,tmp))
+    else:
+        f=(filt or "所有檔案|*.*").replace("'","''")
+        ps=common+("$g=New-Object System.Windows.Forms.OpenFileDialog;"
+                   "$g.Title='%s';$g.Filter='%s';$g.CheckFileExists=$true;"
+                   "if($g.ShowDialog($o) -eq [System.Windows.Forms.DialogResult]::OK)"
+                   "{[IO.File]::WriteAllText('%s',$g.FileName,[Text.Encoding]::UTF8)}"%(t,f,tmp))
+    try:
+        subprocess.run(["powershell","-NoProfile","-STA","-Command",ps],timeout=600)
+    except Exception as e:
+        try: os.remove(tmp)
+        except Exception: pass
+        print("  (原生選擇視窗叫不出來:%s)"%e); return ("unavailable",None)
+    path=None
+    try:
+        with open(tmp,encoding="utf-8-sig") as fp: path=fp.read().strip() or None
+    except Exception: path=None
+    try: os.remove(tmp)
+    except Exception: pass
+    return ("ok",path) if path else ("cancel",None)
+
 def wizard():
-    """直接跑 .py(非凍結)→ tkinter 選擇資料夾/檔案對話框;打包 exe(凍結)→ 拖曳貼路徑。"""
-    frozen=getattr(sys,"frozen",False)
-    _fd=None; tkroot=None
-    if not frozen:
-        try:
-            import tkinter as tk
-            from tkinter import filedialog as _fd_mod
-            _fd=_fd_mod; tkroot=tk.Tk(); tkroot.withdraw()
-            try: tkroot.attributes("-topmost",True); tkroot.update()
-            except Exception: pass
-        except Exception:
-            _fd=None; tkroot=None
+    """選路徑一律用 Windows 原生『選擇資料夾/檔案』對話框(.py 與打包 exe 行為一致,不用拖拉)。"""
     def get_dir(name):
-        if _fd is not None:
-            try: tkroot.lift(); tkroot.focus_force()
-            except Exception: pass
-            return _fd.askdirectory(parent=tkroot,title="選擇「%s」資料夾"%name) or None
-        return _ask_path("把『%s』拖進本視窗,按 Enter:"%name,"dir")
+        st,p=_win_dialog("dir","選擇「%s」資料夾"%name)
+        if st=="unavailable": return _ask_path("把『%s』資料夾拖進本視窗,按 Enter:"%name,"dir")
+        return p
     def get_file(name,ft):
-        if _fd is not None:
-            try: tkroot.lift(); tkroot.focus_force()
-            except Exception: pass
-            return _fd.askopenfilename(parent=tkroot,title="選擇「%s」"%name,filetypes=ft) or None
-        return _ask_path("把『%s』拖進本視窗,按 Enter:"%name,"file")
+        filt="|".join("%s|%s"%(desc,pat) for desc,pat in ft) if ft else "所有檔案|*.*"
+        st,p=_win_dialog("file","選擇「%s」"%name,filt)
+        if st=="unavailable": return _ask_path("把『%s』拖進本視窗,按 Enter:"%name,"file")
+        return p
 
     print("="*46); print("            空拍套疊工具"); print("="*46)
     print("[1] 只合成空拍(拼接 → mosaic.png,不套圖)")
     print("[2] 合成 + 產生對位工具(要套施工圖)")
     print("[3] 產出套疊圖(已在 picker.html 點好、下載 points.txt 後)")
-    if frozen: print("提示:需要路徑時,把資料夾/檔案『拖進這個黑視窗』自動貼上,再按 Enter")
+    print("提示:選 1/2/3 後會彈出『選擇資料夾/檔案』視窗(若被黑視窗擋住,點工作列圖示)")
     ch=input("請選 1 / 2 / 3:").strip()
     if ch=="1":
         folder=get_dir("空拍照")
