@@ -521,7 +521,7 @@ namespace NFP {
       return path;
     }
     [DllImport("user32.dll")] static extern IntPtr GetActiveWindow();
-    [ComImport, ClassInterface(ClassInterfaceType.None), Guid("DC1C5A9C-E88A-4ADE-A5A1-60F82A20AEF7")] class FileOpenDialogRCW {}
+    [ComImport, ClassInterface(ClassInterfaceType.None), Guid("DC1C5A9C-E88A-4DDE-A5A1-60F82A20AEF7")] class FileOpenDialogRCW {}
     [ComImport, Guid("d57c7288-d4ad-4768-be02-9d969532d960"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     interface IFileOpenDialog {
       [PreserveSig] int Show(IntPtr parent);
