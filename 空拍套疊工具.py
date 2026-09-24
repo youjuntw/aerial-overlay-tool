@@ -573,8 +573,10 @@ def _win_dialog(kind, title, filt=None):
         _clean(); print("  (選擇視窗建立失敗:%s)"%e); return ("unavailable",None)
     args=["powershell","-NoProfile","-STA","-ExecutionPolicy","Bypass","-File",ps1,
           "-Title",title,"-Out",tmp,"-Mode",kind,"-Filter",(filt or "所有檔案|*.*")]
+    # 隱藏 powershell 子行程的黑視窗(選擇對話框是 GUI,不受影響照常彈出)
+    nowin=getattr(subprocess,"CREATE_NO_WINDOW",0x08000000)
     try:
-        subprocess.run(args,timeout=600)
+        subprocess.run(args,timeout=600,creationflags=nowin)
     except Exception as e:
         _clean(); print("  (原生選擇視窗叫不出來:%s)"%e); return ("unavailable",None)
     path=None
